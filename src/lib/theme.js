@@ -1,0 +1,31 @@
+export const lightTheme = {
+  bg: "#F7F6F3",
+  bgAlt: "#EFEEE9",
+  bgDark: "#1C1C1C",
+  text: "#1C1C1C",
+  textMuted: "#6B6860",
+  textLight: "#F7F6F3",
+  accent: "#2B6B5A",
+  accentLight: "#3A8B74",
+  annotBg: "#FFFBEB",
+  annotBorder: "#D4A843",
+  annotText: "#7A6420",
+  border: "#E2E0DA",
+  cardBg: "#FFFFFF",
+};
+
+export const darkTheme = {
+  bg: "#141413",
+  bgAlt: "#1E1E1C",
+  bgDark: "#0A0A09",
+  text: "#E8E6E1",
+  textMuted: "#9B9890",
+  textLight: "#E8E6E1",
+  accent: "#4ABA9E",
+  accentLight: "#5CD4B5",
+  annotBg: "#2A2518",
+  annotBorder: "#BF9730",
+  annotText: "#D4B85C",
+  border: "#2E2D28",
+  cardBg: "#1E1E1C",
+};

@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@keyframes annotFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(43, 107, 90, 0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 0.6;
+}
+
+/* Desktop nav visible, mobile nav hidden */
+@media (min-width: 769px) {
+  .wa-mm { display: none !important; }
+}
+
+/* Mobile nav visible, desktop nav hidden */
+@media (max-width: 768px) {
+  .wa-dn { display: none !important; }
+}
