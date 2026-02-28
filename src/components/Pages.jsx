@@ -9,11 +9,17 @@ import { An, Sec, Img, PageHeader, SL, Btn, SiteFooter } from "./SharedUI";
 export function HomePage({ lm, T, activePage, setActivePage }) {
   const [playing, setPlaying] = useState(false);
   const [tqi, setTqi] = useState(0); // testimonial quote index
+  const [tPaused, setTPaused] = useState(false);
   const testimonials = [
     { q: "They didn't just redesign our site — they redesigned how we think about our organisation's story. Enquiries doubled in three months.", name: "Sarah O.", role: "CEO, Global Health Initiative" },
     { q: "We finally have a website that explains what we do without us having to be in the room. It's like having a 24-hour salesperson.", name: "Marcus L.", role: "Director, Community Foundation" },
     { q: "The clarity of thinking that went into every section gave us a framework we still use internally, two years on.", name: "Priya K.", role: "Head of Communications, HundrED" },
   ];
+  useEffect(() => {
+    if (tPaused) return;
+    const id = setInterval(() => setTqi(p => (p + 1) % testimonials.length), 5000);
+    return () => clearInterval(id);
+  }, [tPaused, testimonials.length]);
   return (
     <>
       <PageHeader T={T} title="The ideal landing page" desc="Every section below serves a purpose. Together they form a complete, conversion-focused page. Toggle Learning ON to understand the role of each." />
@@ -167,7 +173,7 @@ export function HomePage({ lm, T, activePage, setActivePage }) {
       {/* Testimonial Carousel */}
       <Sec T={T} style={{ padding: "64px 20px" }}>
         <An T={T} label="Testimonial" title="Let others sell for you" pos="top-right" vis={lm}>One well-chosen testimonial beats ten mediocre ones. Include a specific outcome. A carousel lets you rotate multiple without clutter.</An>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }} onMouseEnter={() => setTPaused(true)} onMouseLeave={() => setTPaused(false)}>
           <div style={{ fontSize: 72, lineHeight: 1, color: T.accent, fontFamily: "'Instrument Serif',serif", marginBottom: 8 }}>"</div>
           <blockquote style={{ fontFamily: "'Instrument Serif',serif", fontSize: "clamp(22px,3vw,40px)", fontWeight: 400, lineHeight: 1.3, fontStyle: "italic", color: T.text, marginBottom: 32, transition: "opacity 0.3s" }}>
             {testimonials[tqi].q}
@@ -512,6 +518,54 @@ export function GridPage({ lm, T, activePage, setActivePage }) {
           </div>
         </div>
       </Sec>
+      {/* Responsiveness Demo */}
+      <Sec T={T} style={{ padding: "56px 20px", background: T.bgAlt, borderTop: `1px solid ${T.border}` }}>
+        <An T={T} label="Responsive Grids" title="How grids adapt to screen size" pos="top-right" vis={lm}>Grid systems don't break on mobile — they reflow. A 4-column desktop grid becomes 2-column on tablet and single-column on mobile. The same content, restructured for the space available.</An>
+        <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+          <SL T={T}>Responsive Grid Behaviour</SL>
+          <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, lineHeight: 1.7, color: T.textMuted, maxWidth: 640, marginBottom: 36 }}>The same CSS grid automatically adapts using <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, background: T.border, padding: "1px 6px", borderRadius: 4, color: T.text }}>auto-fit</code> and <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, background: T.border, padding: "1px 6px", borderRadius: 4, color: T.text }}>minmax()</code>. Columns wrap into fewer rows as screen width shrinks — no JavaScript required.</p>
+
+          {/* Visual demo: three viewport sizes */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+            {[
+              { label: "Desktop (1040px+)", cols: 4, w: "100%", desc: "4 columns — maximum information density" },
+              { label: "Tablet (640–1040px)", cols: 2, w: "60%", desc: "2 columns — balanced readability" },
+              { label: "Mobile (< 640px)", cols: 1, w: "34%", desc: "1 column — full-width stacking" },
+            ].map(({ label, cols, w, desc }, vi) => (
+              <div key={vi} style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+                {/* Viewport mockup */}
+                <div style={{ width: w, minWidth: 120, flexShrink: 0, border: `1.5px solid ${T.border}`, borderRadius: 10, padding: 12, background: T.cardBg }}>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 10, alignItems: "center" }}>
+                    {[8, 6, 6].map((s, i) => <div key={i} style={{ width: s, height: s, borderRadius: "50%", background: T.border }} />)}
+                    <div style={{ flex: 1, height: 8, borderRadius: 4, background: T.bgAlt, marginLeft: 4 }} />
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 5 }}>
+                    {Array.from({ length: cols * 2 }).map((_, i) => (
+                      <div key={i} style={{ height: 28, borderRadius: 5, background: i === 0 && cols === 4 ? T.accent : `hsl(${160 + i * 20},20%,${T.bg === "#FAFAF8" ? 82 : 28}%)` }} />
+                    ))}
+                  </div>
+                </div>
+                {/* Label */}
+                <div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: T.accent, marginBottom: 4 }}>{label}</div>
+                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: T.text, fontWeight: 500, marginBottom: 3 }}>{cols === 1 ? "1 column" : `${cols} columns`}</div>
+                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Code note */}
+          <div style={{ marginTop: 36, padding: "16px 20px", borderRadius: 10, background: T.cardBg, border: `1px solid ${T.border}` }}>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: T.accent, marginBottom: 10 }}>The CSS that makes it happen</div>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: T.textMuted, lineHeight: 1.8 }}>
+              <span style={{ color: T.text }}>grid-template-columns</span>: repeat(<span style={{ color: T.accent }}>auto-fit</span>, minmax(<span style={{ color: T.accent }}>220px</span>, <span style={{ color: T.accent }}>1fr</span>));
+            </div>
+            <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, marginTop: 10, lineHeight: 1.6 }}>With <strong style={{ color: T.text }}>minmax(220px, 1fr)</strong>: each column is at least 220px wide. When the container can no longer fit multiple columns at that minimum, they automatically wrap — creating the responsive behaviour shown above.</div>
+          </div>
+        </div>
+      </Sec>
+
       <SiteFooter activePage={activePage} setActivePage={setActivePage} T={T} />
     </div>
   );
@@ -723,7 +777,7 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
         onClick={onClick}
         onMouseEnter={() => sH(true)}
         onMouseLeave={() => sH(false)}
-        style={{ position: "absolute", [dir === "l" ? "left" : "right"]: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: h ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)", color: "#fff", fontSize: 20, cursor: "pointer", transition: "all 0.2s", lineHeight: 1 }}
+        style={{ position: "absolute", [dir === "l" ? "left" : "right"]: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: h ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)", color: "#fff", fontSize: 20, cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         {dir === "l" ? "‹" : "›"}
       </button>
@@ -759,8 +813,8 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
                 Slide {i + 1}
               </div>
             ))}
-            <button onClick={() => sSi(p => (p - 1 + sc) % sc)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 16, cursor: "pointer" }}>‹</button>
-            <button onClick={() => sSi(p => (p + 1) % sc)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 16, cursor: "pointer" }}>›</button>
+            <button onClick={() => sSi(p => (p - 1 + sc) % sc)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
+            <button onClick={() => sSi(p => (p + 1) % sc)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>›</button>
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16 }}>
             {Array.from({ length: sc }).map((_, i) => (
@@ -816,7 +870,7 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
       {/* Lightbox overlay */}
       {lbOpen && (
         <div onClick={() => setLbOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-          <button onClick={() => setLbOpen(false)} style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.1)", color: "#fff", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <button onClick={() => setLbOpen(false)} style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.1)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
           <ArrowBtn dir="l" onClick={e => { e.stopPropagation(); setLbIdx(p => (p - 1 + imgCount) % imgCount); }} />
           <div
             onClick={e => e.stopPropagation()}
@@ -827,6 +881,7 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
           <ArrowBtn dir="r" onClick={e => { e.stopPropagation(); setLbIdx(p => (p + 1) % imgCount); }} />
         </div>
       )}
+      <SiteFooter activePage={activePage} setActivePage={setActivePage} T={T} />
     </div>
   );
 }
@@ -854,7 +909,6 @@ function Counter({ target, suffix = "", label, animate, delay = 0 }) {
     <div>
       <div style={{ fontFamily: "'Instrument Serif',serif", fontSize: "clamp(32px,5vw,52px)", fontWeight: 400, letterSpacing: "-0.02em", color: "#fff" }}>{c}{suffix}</div>
       <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>{label}</div>
-      <SiteFooter activePage={activePage} setActivePage={setActivePage} T={T} />
     </div>
   );
 }
@@ -1225,7 +1279,7 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
       {bioModal && (
         <div onClick={() => setBioModal(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(4px)" }}>
           <div onClick={e => e.stopPropagation()} style={{ width: "min(90vw,440px)", background: T.cardBg, borderRadius: 16, padding: "clamp(28px,5vw,40px)", position: "relative" }}>
-            <button onClick={() => setBioModal(null)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer" }}>✕</button>
+            <button onClick={() => setBioModal(null)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             <div style={{ width: 64, height: 64, borderRadius: "50%", background: `linear-gradient(135deg,hsl(${bioModal.hue},28%,52%),hsl(${bioModal.hue + 40},22%,38%))`, marginBottom: 20 }} />
             <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 4 }}>{bioModal.name}</h3>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: T.accent, marginBottom: 16 }}>{bioModal.role}</div>
@@ -1842,7 +1896,7 @@ export function ContactPage({ lm, T, activePage, setActivePage }) {
       {nlPopup && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(4px)" }}>
           <div style={{ width: "min(90vw,480px)", background: T.cardBg, borderRadius: 16, padding: "clamp(28px,5vw,48px)", position: "relative", textAlign: "center" }}>
-            <button onClick={() => setNlPopup(false)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer" }}>✕</button>
+            <button onClick={() => setNlPopup(false)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             <div style={{ fontSize: 40, marginBottom: 16 }}>✉</div>
             <h2 style={{ fontFamily: "'Instrument Serif',serif", fontSize: "clamp(22px,4vw,30px)", fontWeight: 400, marginBottom: 10, color: T.text }}>Don't miss what's next</h2>
             <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 15, color: T.textMuted, marginBottom: 24, lineHeight: 1.6 }}>Join 2,000+ people getting practical insights. One email per week.</p>
@@ -1905,13 +1959,32 @@ const glossaryData = [
 ];
 
 export function GlossaryPage({ T, activePage, setActivePage }) {
-  const letters = [...new Set(glossaryData.map(g => g.term[0].toUpperCase()))].sort();
+  const [filterLetter, setFilterLetter] = useState(null);
+  const allLetters = [...new Set(glossaryData.map(g => g.term[0].toUpperCase()))].sort();
+  const letters = filterLetter ? [filterLetter] : allLetters;
   const perplexityUrl = term =>
     `https://www.perplexity.ai/search?q=Explain+the+term+%22${encodeURIComponent(term)}%22+in+web+anatomy+context`;
   return (
     <div>
       <PageHeader T={T} title="Glossary" desc="Every term you need to understand when discussing, planning, or reviewing a website — alphabetically organised." />
       <div style={{ padding: "0 20px 64px", maxWidth: 1040, margin: "0 auto" }}>
+
+        {/* Letter filter chips */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, paddingTop: 32, marginBottom: 8 }}>
+          {[null, ...allLetters].map(l => (
+            <button
+              key={l ?? "all"}
+              onClick={() => setFilterLetter(l)}
+              style={{ padding: "5px 11px", borderRadius: 6, border: `1px solid ${(filterLetter === l) ? T.accent : T.border}`, background: (filterLetter === l) ? T.accent : "transparent", color: (filterLetter === l) ? "#fff" : T.textMuted, fontFamily: "'JetBrains Mono',monospace", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all 0.15s" }}
+            >
+              {l ?? "All"}
+            </button>
+          ))}
+        </div>
+        <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: T.textMuted, marginBottom: 32 }}>
+          {filterLetter ? `Showing terms starting with "${filterLetter}" — ${glossaryData.filter(g => g.term[0].toUpperCase() === filterLetter).length} terms` : `${glossaryData.length} terms total`}
+        </div>
+
         {letters.map(l => (
           <div key={l}>
             <div style={{ fontFamily: "'Instrument Serif',serif", fontSize: 40, fontWeight: 400, color: T.accent, marginTop: 48, marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${T.border}` }}>{l}</div>

@@ -165,7 +165,8 @@ export function IntroModal({ open, onEnter, T }) {
         <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, lineHeight: 1.75, color: T.textMuted }}>
           <p style={{ marginBottom: 12 }}>Web Anatomy is an interactive reference tool created by <strong style={{ color: T.text }}>Calumma</strong> — a design studio that helps mission-driven organisations unveil their unique value to the world.</p>
           <p style={{ marginBottom: 12 }}>We built this because organisations know they need a website, but struggle to articulate <em>what</em> should go on it and <em>why</em>. Web Anatomy solves this by showing — not just telling — how different sections, layouts, and patterns work.</p>
-          <p style={{ marginBottom: 28 }}>Toggle <strong style={{ color: T.annotText }}>"Learning ON"</strong> in the nav to see educational annotations throughout, explaining the thinking behind every design decision.</p>
+          <p style={{ marginBottom: 12 }}>Toggle <strong style={{ color: T.annotText }}>"Learning ON"</strong> in the nav to see educational annotations throughout, explaining the thinking behind every design decision.</p>
+          <p style={{ marginBottom: 28, padding: "10px 14px", borderRadius: 8, background: T.bgAlt, fontSize: 13, color: T.textMuted }}>💻 <strong style={{ color: T.text }}>Best experienced on desktop.</strong> Mobile and tablet views are optimised for responsiveness but may not represent all layouts and annotations exactly as described.</p>
           <button
             onClick={onEnter}
             style={{ width: "100%", padding: "14px 24px", borderRadius: 10, border: "none", background: T.accent, color: "#fff", fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 600, cursor: "pointer", letterSpacing: "-0.01em" }}
@@ -187,14 +188,15 @@ export function InfoModal({ open, onClose, T }) {
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(4px)" }}>
       <div onClick={e => e.stopPropagation()} style={{ width: "min(90vw,500px)", background: T.cardBg, borderRadius: 16, padding: "clamp(28px,5vw,44px)", position: "relative" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer" }}>✕</button>
+        <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
         <div style={{ width: 40, height: 40, borderRadius: 8, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 20 }}>W</div>
         <h2 style={{ fontFamily: "'Instrument Serif', serif", fontSize: 28, fontWeight: 400, color: T.text, marginBottom: 12 }}>About Web Anatomy</h2>
         <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, lineHeight: 1.7, color: T.textMuted }}>
           <p style={{ marginBottom: 12 }}>Web Anatomy is an interactive reference tool created by <strong style={{ color: T.text }}>Calumma</strong> — a design studio that helps mission-driven organisations unveil their unique value to the world.</p>
           <p style={{ marginBottom: 12 }}>We built this because we noticed a recurring challenge: organisations know they need a website, but they struggle to articulate <em>what</em> should go on it and <em>why</em>. When they approach a developer, they don't have the vocabulary or mental models to brief effectively.</p>
           <p style={{ marginBottom: 12 }}>Web Anatomy solves this by showing — not just telling — how different website sections, layouts, and interactive elements work, what purpose they serve, and when to use them.</p>
-          <p style={{ marginBottom: 16 }}>Toggle <strong style={{ color: T.annotText }}>"Learning ON"</strong> to see educational annotations on every section, explaining the strategic thinking behind each design pattern.</p>
+          <p style={{ marginBottom: 12 }}>Toggle <strong style={{ color: T.annotText }}>"Learning ON"</strong> to see educational annotations on every section, explaining the strategic thinking behind each design pattern.</p>
+          <p style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 8, background: T.bgAlt, fontSize: 13, color: T.textMuted }}>💻 <strong style={{ color: T.text }}>Best experienced on desktop.</strong> Mobile and tablet views are optimised for responsiveness but may not represent all layouts and annotations exactly as described.</p>
           <a href="https://calumma.design" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "10px 20px", borderRadius: 8, background: T.accent, color: "#fff", fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
             Visit calumma.design →
           </a>

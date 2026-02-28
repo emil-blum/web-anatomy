@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function An({ label, title, children, pos = "top-right", vis, T }) {
   if (!vis) return null;
@@ -86,6 +86,14 @@ export function Btn({ children, T, primary = true, onClick, style = {} }) {
 }
 
 export function SiteFooter({ activePage, setActivePage, T }) {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const allPages = [
     { id: "home",        label: "Landing Page",         group: "Pages" },
     { id: "about",       label: "About Page",           group: "Pages" },
@@ -133,10 +141,10 @@ export function SiteFooter({ activePage, setActivePage, T }) {
 
       {/* Nav grid */}
       <div style={{ padding: "0 20px" }}>
-        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "48px 0", display: "grid", gridTemplateColumns: "2fr 1fr 1.5fr 1fr", gap: "32px 40px" }}>
+        <div style={{ maxWidth: 1040, margin: "0 auto", padding: mobile ? "32px 0" : "48px 0", display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "2fr 1fr 1.5fr 1fr", gap: mobile ? "28px 24px" : "32px 40px" }}>
 
           {/* Brand column */}
-          <div>
+          <div style={{ gridColumn: mobile ? "1 / -1" : "auto" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <div style={{ width: 28, height: 28, borderRadius: 6, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700 }}>W</div>
               <span style={{ fontWeight: 600, fontSize: 15, color: "#fff", fontFamily: "'Outfit', sans-serif" }}>Web Anatomy</span>
@@ -165,7 +173,7 @@ export function SiteFooter({ activePage, setActivePage, T }) {
 
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", padding: "0 20px" }}>
-        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "18px 0", display: "flex", flexDirection: mobile ? "column" : "row", justifyContent: "space-between", alignItems: mobile ? "flex-start" : "center", gap: mobile ? 6 : 0 }}>
           <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.2)" }}>© 2026 Calumma. All rights reserved.</span>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "rgba(255,255,255,0.15)", letterSpacing: "0.1em" }}>WEB ANATOMY</span>
         </div>
