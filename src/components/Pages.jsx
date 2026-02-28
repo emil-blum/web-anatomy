@@ -179,7 +179,8 @@ export function HomePage({ lm, T, activePage, setActivePage }) {
             {testimonials[tqi].q}
           </blockquote>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, marginBottom: 32 }}>
-            <div style={{ width: 44, height: 44, borderRadius: "50%", background: `linear-gradient(135deg,hsl(${tqi * 80 + 30},25%,55%),hsl(${tqi * 80 + 90},20%,42%))` }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`https://i.pravatar.cc/88?img=${tqi + 20}`} alt="" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", display: "block" }} />
             <div style={{ textAlign: "left" }}>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>{testimonials[tqi].name}</div>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: T.textMuted }}>{testimonials[tqi].role}</div>
@@ -416,9 +417,8 @@ export function GridPage({ lm, T, activePage, setActivePage }) {
           <SL T={T}>Masonry Grid</SL>
           <div style={{ columns: "3 280px", columnGap: 16 }}>
             {[220, 160, 300, 180, 240, 200, 170, 260].map((h, i) => (
-              <div key={i} style={{ breakInside: "avoid", marginBottom: 16, borderRadius: 10, overflow: "hidden", background: `linear-gradient(135deg,hsl(${i * 45 + 20},22%,${i % 2 === 0 ? 55 : 48}%),hsl(${i * 45 + 60},18%,${i % 2 === 0 ? 42 : 38}%))`, height: h, display: "flex", alignItems: "flex-end", padding: 14 }}>
-                <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>Item {i + 1}</span>
-              </div>
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={i} src={`https://picsum.photos/seed/mas${i}/600/${h}`} alt="" style={{ breakInside: "avoid", marginBottom: 16, borderRadius: 10, width: "100%", height: h, objectFit: "cover", display: "block" }} />
             ))}
           </div>
         </div>
@@ -794,7 +794,8 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
         <div style={{ padding: "0 20px", maxWidth: 1040, margin: "0 auto 24px" }}><SL T={T}>Auto-Scrolling Carousel</SL></div>
         <div ref={sRef} style={{ display: "flex", gap: 16, overflow: "hidden", padding: "0 20px" }}>
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} style={{ flexShrink: 0, width: 240, height: 160, borderRadius: 10, background: `linear-gradient(135deg,hsl(${i * 36},30%,60%),hsl(${i * 36 + 60},25%,45%))` }} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={i} src={`https://picsum.photos/seed/gal${i}/240/160`} alt="" style={{ flexShrink: 0, width: 240, height: 160, borderRadius: 10, objectFit: "cover", display: "block" }} />
           ))}
         </div>
       </Sec>
@@ -806,12 +807,13 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
           <SL T={T}>Slideshow</SL>
           <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
             {Array.from({ length: sc }).map((_, i) => (
-              <div
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 key={i}
-                style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg,hsl(${i * 70},30%,55%),hsl(${i * 70 + 80},25%,40%))`, opacity: si === i ? 1 : 0, transition: "opacity 0.6s", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Outfit',sans-serif", fontSize: 20, fontWeight: 500, color: "rgba(255,255,255,0.7)" }}
-              >
-                Slide {i + 1}
-              </div>
+                src={`https://picsum.photos/seed/slide${i}/1200/675`}
+                alt=""
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: si === i ? 1 : 0, transition: "opacity 0.6s" }}
+              />
             ))}
             <button onClick={() => sSi(p => (p - 1 + sc) % sc)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
             <button onClick={() => sSi(p => (p + 1) % sc)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.3)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>›</button>
@@ -831,15 +833,16 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
           <SL T={T}>Lightbox Gallery — click any image</SL>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 12 }}>
             {Array.from({ length: imgCount }).map((_, i) => (
-              <div
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 key={i}
+                src={`https://picsum.photos/seed/lb${i}/600/600`}
+                alt=""
                 onClick={() => { setLbIdx(i); setLbOpen(true); }}
-                style={{ aspectRatio: "1", borderRadius: 10, cursor: "pointer", background: `linear-gradient(135deg,hsl(${i * 55 + 20},28%,58%),hsl(${i * 55 + 80},22%,42%))`, transition: "transform 0.2s", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)" }}
+                style={{ aspectRatio: "1", borderRadius: 10, cursor: "pointer", objectFit: "cover", width: "100%", display: "block", transition: "transform 0.2s" }}
                 onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
                 onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-              >
-                Image {i + 1}
-              </div>
+              />
             ))}
           </div>
         </div>
@@ -851,16 +854,20 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
         <div style={{ maxWidth: 1040, margin: "0 auto" }}>
           <SL T={T}>Hover Expand Gallery</SL>
           <div style={{ display: "flex", gap: 12, height: 360 }}>
-            {[{ hue: 20 }, { hue: 130 }, { hue: 220 }].map(({ hue }, i) => (
+            {[20, 130, 220].map((seed, i) => (
               <div
                 key={i}
                 onMouseEnter={() => setExpandIdx(i)}
                 onMouseLeave={() => setExpandIdx(null)}
-                style={{ flex: expandIdx === i ? "0 0 60%" : "1", borderRadius: 12, overflow: "hidden", background: `linear-gradient(160deg,hsl(${hue},30%,52%),hsl(${hue + 40},22%,38%))`, cursor: "pointer", transition: "flex 0.45s cubic-bezier(0.4,0,0.2,1)", display: "flex", alignItems: "flex-end", padding: 16 }}
+                style={{ flex: expandIdx === i ? "0 0 60%" : "1", borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "flex 0.45s cubic-bezier(0.4,0,0.2,1)", position: "relative" }}
               >
-                <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 500, opacity: expandIdx === i ? 1 : 0, transition: "opacity 0.3s 0.1s" }}>
-                  Image {i + 1}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`https://picsum.photos/seed/exp${seed}/800/720`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)", display: "flex", alignItems: "flex-end", padding: 16 }}>
+                  <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#fff", fontWeight: 500, opacity: expandIdx === i ? 1 : 0, transition: "opacity 0.3s 0.1s" }}>
+                    Image {i + 1}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -872,12 +879,13 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
         <div onClick={() => setLbOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <button onClick={() => setLbOpen(false)} style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.1)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
           <ArrowBtn dir="l" onClick={e => { e.stopPropagation(); setLbIdx(p => (p - 1 + imgCount) % imgCount); }} />
-          <div
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             onClick={e => e.stopPropagation()}
-            style={{ width: "min(80vw,600px)", aspectRatio: "4/3", borderRadius: 12, background: `linear-gradient(135deg,hsl(${lbIdx * 55 + 20},28%,58%),hsl(${lbIdx * 55 + 80},22%,42%))`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Outfit',sans-serif", fontSize: 24, color: "rgba(255,255,255,0.6)" }}
-          >
-            Image {lbIdx + 1}
-          </div>
+            src={`https://picsum.photos/seed/lb${lbIdx}/800/600`}
+            alt=""
+            style={{ width: "min(80vw,600px)", aspectRatio: "4/3", borderRadius: 12, objectFit: "cover", display: "block" }}
+          />
           <ArrowBtn dir="r" onClick={e => { e.stopPropagation(); setLbIdx(p => (p + 1) % imgCount); }} />
         </div>
       )}
@@ -1024,8 +1032,9 @@ export function MotionPage({ lm, T, activePage, setActivePage }) {
         <div ref={uRef} style={{ maxWidth: 1040, margin: "0 auto" }}>
           <SL T={T}>Image Unmask on Scroll</SL>
           <div style={{ position: "relative", height: 300, borderRadius: 12, overflow: "hidden", background: T.border }}>
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,#2B6B5A,#1a4a3d,#3A8B74)", clipPath: `inset(0 ${(1 - uProg) * 100}% 0 0)`, transition: "clip-path 0.15s linear", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontFamily: "'Instrument Serif',serif", fontSize: "clamp(24px,4vw,36px)", color: "rgba(255,255,255,0.8)", fontStyle: "italic" }}>Revealed on scroll</span>
+            <div style={{ position: "absolute", inset: 0, clipPath: `inset(0 ${(1 - uProg) * 100}% 0 0)`, transition: "clip-path 0.15s linear" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://picsum.photos/seed/unmask/1040/300" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             </div>
             <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
               <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: T.textMuted, opacity: uProg > 0.9 ? 0 : 1, transition: "opacity 0.3s" }}>↓ Scroll to reveal</span>
@@ -1082,9 +1091,9 @@ export function MotionPage({ lm, T, activePage, setActivePage }) {
           <SL T={T}>Hover-to-Reveal Image</SL>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
             {[
-              { title: "Brand Identity", desc: "Visual language that communicates your values at a glance.", hue: 155 },
-              { title: "Web Design",     desc: "Structure and aesthetics aligned with your audience's needs.", hue: 210 },
-              { title: "Strategy",       desc: "Clarity on who you serve and how to reach them.", hue: 260 },
+              { title: "Brand Identity", desc: "Visual language that communicates your values at a glance.", seed: "rev0" },
+              { title: "Web Design",     desc: "Structure and aesthetics aligned with your audience's needs.", seed: "rev1" },
+              { title: "Strategy",       desc: "Clarity on who you serve and how to reach them.", seed: "rev2" },
             ].map((card, i) => (
               <div
                 key={i}
@@ -1097,8 +1106,10 @@ export function MotionPage({ lm, T, activePage, setActivePage }) {
                   <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6 }}>{card.desc}</p>
                   <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.accent, marginTop: 16 }}>hover to reveal →</p>
                 </div>
-                <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg,hsl(${card.hue},40%,40%),hsl(${card.hue + 40},30%,28%))`, opacity: hoverReveal === i ? 1 : 0, transition: "opacity 0.4s", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontFamily: "'Instrument Serif',serif", fontSize: 28, color: "rgba(255,255,255,0.85)", fontWeight: 400 }}>{card.title}</span>
+                <div style={{ position: "absolute", inset: 0, opacity: hoverReveal === i ? 1 : 0, transition: "opacity 0.4s", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`https://picsum.photos/seed/${card.seed}/600/400`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  <span style={{ position: "relative", fontFamily: "'Instrument Serif',serif", fontSize: 28, color: "#fff", fontWeight: 400, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>{card.title}</span>
                 </div>
               </div>
             ))}
@@ -1167,12 +1178,12 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
   }, [bioModal]);
 
   const team = [
-    { name: "Alex Rivera",   role: "Founder & CEO",     bio: "15 years leading creative teams across education and healthcare. Previously at IDEO and frog design. Believes design should serve those who need it most.", hue: 160 },
-    { name: "Sam Chen",      role: "Lead Designer",     bio: "Specialises in brand systems and visual identity. Former art director at Pentagram. Obsessed with typography and colour theory.", hue: 210 },
-    { name: "Jordan Wells",  role: "Strategist",        bio: "Combines research and storytelling to find positioning that resonates. Background in behavioural psychology and nonprofit consulting.", hue: 260 },
-    { name: "Maya Okonkwo",  role: "Developer",         bio: "Full-stack engineer who believes beautiful code creates beautiful experiences. Open-source contributor and accessibility advocate.", hue: 30 },
-    { name: "Lena Virtanen", role: "Project Lead",      bio: "Keeps complex projects on track without losing the human element. Previously managed €5M+ programmes in the public sector.", hue: 80 },
-    { name: "Tomás Garcia",  role: "Content Writer",    bio: "Turns complicated ideas into clear, compelling language. Former journalist covering science and technology.", hue: 340 },
+    { name: "Alex Rivera",   role: "Founder & CEO",     bio: "15 years leading creative teams across education and healthcare. Previously at IDEO and frog design. Believes design should serve those who need it most.", hue: 160, idx: 0 },
+    { name: "Sam Chen",      role: "Lead Designer",     bio: "Specialises in brand systems and visual identity. Former art director at Pentagram. Obsessed with typography and colour theory.", hue: 210, idx: 1 },
+    { name: "Jordan Wells",  role: "Strategist",        bio: "Combines research and storytelling to find positioning that resonates. Background in behavioural psychology and nonprofit consulting.", hue: 260, idx: 2 },
+    { name: "Maya Okonkwo",  role: "Developer",         bio: "Full-stack engineer who believes beautiful code creates beautiful experiences. Open-source contributor and accessibility advocate.", hue: 30, idx: 3 },
+    { name: "Lena Virtanen", role: "Project Lead",      bio: "Keeps complex projects on track without losing the human element. Previously managed €5M+ programmes in the public sector.", hue: 80, idx: 4 },
+    { name: "Tomás Garcia",  role: "Content Writer",    bio: "Turns complicated ideas into clear, compelling language. Former journalist covering science and technology.", hue: 340, idx: 5 },
   ];
 
   return (
@@ -1209,7 +1220,8 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 20 }}>
             {team.map((m, i) => (
               <div key={i} style={{ borderRadius: 12, overflow: "hidden", border: `1px solid ${T.border}`, background: T.cardBg }}>
-                <div style={{ width: "100%", height: 140, background: `linear-gradient(135deg,hsl(${m.hue},28%,52%),hsl(${m.hue + 40},22%,38%))` }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`https://i.pravatar.cc/300?img=${i + 10}`} alt={m.name} style={{ width: "100%", height: 140, objectFit: "cover", display: "block" }} />
                 <div style={{ padding: "14px 16px" }}>
                   <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 15, fontWeight: 600, color: T.text }}>{m.name}</div>
                   <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, marginTop: 3 }}>{m.role}</div>
@@ -1234,17 +1246,21 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
                 onTouchStart={() => setHoveredMember(hoveredMember === i ? null : i)}
                 style={{ position: "relative", borderRadius: 12, overflow: "hidden", cursor: "pointer", border: `1px solid ${T.border}`, background: T.cardBg, transition: "all 0.25s" }}
               >
-                <div style={{ width: "100%", height: 200, background: `linear-gradient(135deg,hsl(${m.hue},28%,52%),hsl(${m.hue + 40},22%,38%))`, display: "flex", alignItems: "flex-end", padding: 16 }}>
+                <div style={{ position: "relative", width: "100%", height: 200 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`https://i.pravatar.cc/400?img=${i + 10}`} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)", display: "flex", alignItems: "flex-end", padding: 16 }}>
                   <div>
                     <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 15, fontWeight: 600, color: "#fff" }}>{m.name}</div>
                     <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "rgba(255,255,255,0.7)" }}>{m.role}</div>
                   </div>
-                </div>
-                {hoveredMember === i && (
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "annotFadeIn 0.2s ease" }}>
-                    <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)", textAlign: "center" }}>{m.bio}</p>
                   </div>
-                )}
+                  {hoveredMember === i && (
+                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "annotFadeIn 0.2s ease" }}>
+                      <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)", textAlign: "center" }}>{m.bio}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -1265,7 +1281,8 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
                 onMouseLeave={e => e.currentTarget.style.borderColor = T.border}
                 style={{ padding: "24px 20px", borderRadius: 12, background: T.cardBg, border: `1px solid ${T.border}`, cursor: "pointer", transition: "all 0.2s" }}
               >
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: `linear-gradient(135deg,hsl(${m.hue},28%,52%),hsl(${m.hue + 40},22%,38%))`, marginBottom: 14 }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt={m.name} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", marginBottom: 14, display: "block" }} />
                 <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 15, fontWeight: 600, color: T.text }}>{m.name}</div>
                 <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, marginTop: 2 }}>{m.role}</div>
                 <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.accent, marginTop: 10 }}>View profile →</div>
@@ -1280,7 +1297,8 @@ export function AboutPage({ lm, T, activePage, setActivePage }) {
         <div onClick={() => setBioModal(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(4px)" }}>
           <div onClick={e => e.stopPropagation()} style={{ width: "min(90vw,440px)", background: T.cardBg, borderRadius: 16, padding: "clamp(28px,5vw,40px)", position: "relative" }}>
             <button onClick={() => setBioModal(null)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: "50%", border: "none", background: T.bgAlt, color: T.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: `linear-gradient(135deg,hsl(${bioModal.hue},28%,52%),hsl(${bioModal.hue + 40},22%,38%))`, marginBottom: 20 }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`https://i.pravatar.cc/128?img=${bioModal.idx + 10}`} alt={bioModal.name} style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", marginBottom: 20, display: "block" }} />
             <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 4 }}>{bioModal.name}</h3>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: T.accent, marginBottom: 16 }}>{bioModal.role}</div>
             <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, lineHeight: 1.7, color: T.textMuted, marginBottom: 20 }}>{bioModal.bio}</p>

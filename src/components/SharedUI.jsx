@@ -28,15 +28,14 @@ export function Sec({ children, dark = false, style = {}, T }) {
 }
 
 export function Img({ height = 300, seed = 1, rounded = 8, style = {} }) {
-  const g = [
-    "linear-gradient(135deg,#C9B99A,#8B9D83,#6B8F7E)",
-    "linear-gradient(135deg,#9EAEBA,#7A8E99,#5C7080)",
-    "linear-gradient(135deg,#D4A574,#B8866F,#8E6B5A)",
-    "linear-gradient(135deg,#A5B5A0,#7E9B85,#5E7F68)",
-    "linear-gradient(135deg,#BCA9C0,#9A849E,#7A6680)",
-    "linear-gradient(135deg,#C4B9A0,#A69880,#887A65)",
-  ];
-  return <div style={{ width: "100%", height, borderRadius: rounded, background: g[seed % g.length], flexShrink: 0, ...style }} />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://picsum.photos/seed/wa${seed}/800/${Math.round(height * 1.6)}`}
+      alt=""
+      style={{ width: "100%", height, borderRadius: rounded, objectFit: "cover", flexShrink: 0, display: "block", ...style }}
+    />
+  );
 }
 
 export function PageHeader({ title, desc, T }) {
