@@ -2109,14 +2109,19 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
   const [exIdx,  setExIdx]  = useState(0);
   const [device, setDevice] = useState("desktop");
   const [scale,  setScale]  = useState(1);
+  const outerRef  = useRef(null); // measures available container width
+  const frameRef  = useRef(null); // chrome + wrapper div — its width is set imperatively
   const wrapperRef = useRef(null);
   const iframeRef  = useRef(null);
 
   const applyScale = useCallback(() => {
-    if (!wrapperRef.current || !iframeRef.current) return;
+    if (!outerRef.current || !frameRef.current || !wrapperRef.current || !iframeRef.current) return;
     const preset = DEVICE_PRESETS.find(d => d.id === device);
-    const containerWidth = wrapperRef.current.clientWidth;
-    const s = Math.min(1, containerWidth / preset.width);
+    const outerWidth = outerRef.current.clientWidth;
+    // Frame narrows to device width when device is smaller than container
+    const frameWidth = Math.min(outerWidth, preset.width);
+    const s = frameWidth / preset.width; // always fills frame exactly
+    frameRef.current.style.width = `${frameWidth}px`;
     iframeRef.current.style.width  = `${preset.width}px`;
     iframeRef.current.style.height = `${PREVIEW_H / s}px`;
     iframeRef.current.style.transform = `scale(${s})`;
@@ -2127,7 +2132,13 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
     applyScale();
     window.addEventListener("resize", applyScale);
     return () => window.removeEventListener("resize", applyScale);
-  }, [applyScale]);
+  }, [applyScale, exIdx]); // exIdx: re-apply after new iframe mounts on example switch
+
+  // Reset to desktop view when switching examples
+  const goToExample = (newIdx) => {
+    setDevice("desktop");
+    setExIdx(newIdx);
+  };
 
   const ex     = EXAMPLES[exIdx];
   const preset = DEVICE_PRESETS.find(d => d.id === device);
@@ -2142,7 +2153,7 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
           {/* Example selector */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
             <button
-              onClick={() => setExIdx(p => (p - 1 + EXAMPLES.length) % EXAMPLES.length)}
+              onClick={() => goToExample((exIdx - 1 + EXAMPLES.length) % EXAMPLES.length)}
               style={{ width: 28, height: 28, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: "transparent", color: T.text, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "border-color 0.15s" }}
             >‹</button>
             <div style={{ minWidth: 0 }}>
@@ -2150,7 +2161,7 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
               <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.textMuted, marginLeft: 8 }}>{exIdx + 1}/{EXAMPLES.length}</span>
             </div>
             <button
-              onClick={() => setExIdx(p => (p + 1) % EXAMPLES.length)}
+              onClick={() => goToExample((exIdx + 1) % EXAMPLES.length)}
               style={{ width: 28, height: 28, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: "transparent", color: T.text, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "border-color 0.15s" }}
             >›</button>
           </div>
@@ -2173,39 +2184,40 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
 
       {/* ── Preview area ── */}
       <div style={{ background: T.bgAlt, padding: "20px 20px 0" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+        {/* outerRef measures available width for the scale calculation */}
+        <div ref={outerRef} style={{ maxWidth: 1280, margin: "0 auto" }}>
 
-          {/* Browser chrome bar */}
-          <div style={{ background: T.cardBg, borderRadius: "12px 12px 0 0", border: `1px solid ${T.border}`, borderBottom: "none", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-              {["#FF5F57", "#FEBC2E", "#28C840"].map((c, i) => (
-                <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
-              ))}
-            </div>
-            <div style={{ flex: 1, background: T.bgAlt, borderRadius: 6, padding: "5px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: T.textMuted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
-              web-anatomy / examples / {ex.id}
-            </div>
-            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-              {ex.tags.slice(0, 3).map(tag => (
-                <span key={tag} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: T.textMuted, background: T.bgAlt, border: `1px solid ${T.border}`, padding: "2px 8px", borderRadius: 4 }}>{tag}</span>
-              ))}
-            </div>
-          </div>
+          {/* frameRef: chrome + wrapper — width is set imperatively to min(outer, device) and centred */}
+          <div ref={frameRef} style={{ margin: "0 auto" }}>
 
-          {/* Scaled iframe wrapper */}
-          <div
-            ref={wrapperRef}
-            style={{ position: "relative", overflow: "hidden", height: PREVIEW_H, background: "#fff", border: `1px solid ${T.border}`, borderTop: "none", borderRadius: "0 0 12px 12px" }}
-          >
-            <iframe
-              ref={iframeRef}
-              key={ex.url}
-              src={ex.url}
-              title={ex.name}
-              style={{ position: "absolute", top: 0, left: 0, transformOrigin: "0 0", border: "none", background: "#fff" }}
-              loading="lazy"
-            />
-          </div>
+            {/* Browser chrome bar */}
+            <div style={{ background: T.cardBg, borderRadius: "12px 12px 0 0", border: `1px solid ${T.border}`, borderBottom: "none", padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                {["#FF5F57", "#FEBC2E", "#28C840"].map((c, i) => (
+                  <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
+                ))}
+              </div>
+              <div style={{ flex: 1, background: T.bgAlt, borderRadius: 6, padding: "5px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: T.textMuted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                web-anatomy / examples / {ex.id}
+              </div>
+            </div>
+
+            {/* Scaled iframe wrapper */}
+            <div
+              ref={wrapperRef}
+              style={{ position: "relative", overflow: "hidden", height: PREVIEW_H, background: "#fff", border: `1px solid ${T.border}`, borderTop: "none", borderRadius: "0 0 12px 12px" }}
+            >
+              <iframe
+                ref={iframeRef}
+                key={ex.url}
+                src={ex.url}
+                title={ex.name}
+                style={{ position: "absolute", top: 0, left: 0, transformOrigin: "0 0", border: "none", background: "#fff" }}
+                loading="lazy"
+              />
+            </div>
+
+          </div>{/* /frameRef */}
 
           {/* Viewport indicator */}
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "10px 0 20px", fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.textMuted }}>
@@ -2225,7 +2237,7 @@ export function ExamplesPage({ T, activePage, setActivePage }) {
             {EXAMPLES.map((e, i) => (
               <div
                 key={e.id}
-                onClick={() => setExIdx(i)}
+                onClick={() => goToExample(i)}
                 style={{ padding: "20px 22px", borderRadius: 12, border: `1.5px solid ${exIdx === i ? T.accent : T.border}`, background: exIdx === i ? T.bgAlt : T.cardBg, cursor: "pointer", transition: "all 0.2s" }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
