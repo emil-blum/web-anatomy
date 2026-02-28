@@ -29,6 +29,30 @@ export default function WebAnatomy() {
   const isDark = tm === "dark" || (tm === "system" && sd);
   const T = isDark ? darkTheme : lightTheme;
 
+  // On mount: read the URL hash and jump to that page
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) setPage(hash);
+  }, []);
+
+  // Keep URL in sync when page state changes
+  useEffect(() => {
+    const hashNow = window.location.hash.slice(1) || "home";
+    if (hashNow === page) return; // already in sync (e.g. triggered by popstate)
+    if (page === "home") {
+      window.history.pushState(null, "", window.location.pathname);
+    } else {
+      window.history.pushState(null, "", `${window.location.pathname}#${page}`);
+    }
+  }, [page]);
+
+  // Handle browser back / forward buttons
+  useEffect(() => {
+    const handler = () => setPage(window.location.hash.slice(1) || "home");
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, []);
+
   // Scroll to top when navigating to a new page
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
