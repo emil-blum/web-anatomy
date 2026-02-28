@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medvantari - AI & Expert Medical Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #ffffff;
+            font-feature-settings: "cv11", "ss01";
+        }
+        
+        /* Ambient Effects */
+        .ambient-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(255, 46, 76, 0.04) 0%, rgba(255, 255, 255, 0) 60%);
+        }
+        
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        #dna-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            filter: blur(1.5px) opacity(0.5);
+            pointer-events: none;
+        }
+
+        /* Device Mockup */
+        .device-mockup {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05), inset 0 0 0 4px #0f172a, inset 0 0 0 12px #ffffff;
+            transform-style: preserve-3d;
+        }
+
+        .floating-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .floating-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(255, 46, 76, 0.1);
+        }
+
+        /* Custom Inputs */
+        .custom-input:focus-within {
+            box-shadow: 0 0 0 2px rgba(255, 46, 76, 0.1);
+            border-color: #FF2E4C;
+        }
+
+        @keyframes float { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-10px); } 
+        }
+        @keyframes pulse-ring { 
+            0% { transform: scale(0.95); opacity: 0.5; } 
+            50% { transform: scale(1.05); opacity: 0.8; } 
+            100% { transform: scale(0.95); opacity: 0.5; } 
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-slate-600 font-normal antialiased selection:bg-red-500/10 selection:text-red-700 overflow-x-hidden">
+
+    <div class="grain-overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 group cursor-pointer">
+                <div class="relative w-6 h-6 flex items-center justify-center">
+                    <iconify-icon icon="solar:dna-linear" class="text-red-500 text-xl"></iconify-icon>
+                    <div class="absolute inset-0 bg-red-500/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+                <span class="text-sm font-medium tracking-tight text-slate-900">Medvantari</span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#" class="text-xs font-normal text-slate-500 hover:text-slate-900 transition-colors">Platform</a>
+                <a href="#" class="text-xs font-normal text-slate-500 hover:text-slate-900 transition-colors">Experts</a>
+                <a href="#" class="text-xs font-normal text-slate-500 hover:text-slate-900 transition-colors">Network</a>
+                <a href="#" class="text-xs font-normal text-slate-500 hover:text-slate-900 transition-colors">Research</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="#" class="text-xs font-normal text-slate-500 hover:text-slate-900 transition-colors hidden sm:block">Sign in</a>
+                <button class="bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full hover:bg-slate-800 transition-all flex items-center gap-2 group">
+                    <span>Get App</span>
+                    <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-0.5 transition-transform"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero-section" class="relative pt-32 pb-20 px-6 overflow-hidden min-h-screen flex flex-col justify-center ambient-glow">
+        
+        <!-- DNA Canvas Background -->
+        <canvas id="dna-canvas"></canvas>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/30 via-white/70 to-white z-0"></div>
+
+        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+            
+            <!-- Content -->
+            <div class="space-y-8 max-w-lg relative z-20">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm transition-transform hover:scale-105 cursor-pointer">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-[pulse-ring_2s_ease-in-out_infinite]"></span>
+                    <span class="text-[11px] font-medium text-slate-600 tracking-wide">Medvantari OS v3.0 is live</span>
+                    <iconify-icon icon="solar:arrow-right-linear" class="text-slate-400 text-xs ml-1"></iconify-icon>
+                </div>
+
+                <h1 class="text-5xl lg:text-7xl font-normal tracking-tight text-slate-900 leading-[1.05]">
+                    Accelerate research with <br>
+                    <span class="text-slate-400">AI & Expert Networks.</span>
+                </h1>
+
+                <p class="text-lg text-slate-500 leading-relaxed font-light">
+                    An advanced iOS ecosystem connecting you with leading biotech experts, university researchers, and AI-driven analysis tools.
+                </p>
+
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
+                    <button class="h-12 px-5 rounded-xl bg-slate-900 text-white font-medium text-xs shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-3">
+                        <iconify-icon icon="solar:smartphone-2-linear" class="text-xl"></iconify-icon>
+                        <div class="text-left flex flex-col justify-center border-l border-slate-700 pl-3">
+                            <span class="text-[9px] text-slate-400 leading-tight">Available for</span>
+                            <span class="text-sm font-medium leading-none mt-0.5">iOS App Store</span>
+                        </div>
+                    </button>
+                    
+                    <button class="h-12 px-6 rounded-xl bg-white border border-slate-200 text-slate-600 font-medium text-xs hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2">
+                        Schedule Demo
+                        <iconify-icon icon="solar:calendar-mark-linear" class="text-slate-400 text-lg"></iconify-icon>
+                    </button>
+                </div>
+
+                <div class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 pl-1">
+                    <iconify-icon icon="solar:info-circle-linear"></iconify-icon>
+                    Android version currently in beta testing
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 pt-10 border-t border-slate-100">
+                    <div>
+                        <div class="text-2xl font-medium text-slate-900 tracking-tight">5k+</div>
+                        <div class="text-xs text-slate-500 mt-1">Verified Experts</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-medium text-slate-900 tracking-tight">10M</div>
+                        <div class="text-xs text-slate-500 mt-1">Papers Analyzed</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-medium text-slate-900 tracking-tight">24/7</div>
+                        <div class="text-xs text-slate-500 mt-1">AI Assistance</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Mockup Visualization -->
+            <div class="relative flex items-center justify-center h-[600px] z-10 lg:pl-10 perspective-1000 scale-90 md:scale-100">
+                
+                <div class="relative w-[280px] h-[580px] bg-white rounded-[40px] device-mockup overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-700 ease-out">
+                    
+                    <!-- Dynamic Island -->
+                    <div class="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-slate-900 rounded-full z-30 flex items-center justify-end px-3">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 opacity-80 shadow-[0_0_4px_#22c55e]"></div>
+                    </div>
+
+                    <!-- App Content -->
+                    <div class="w-full h-full pt-14 pb-8 flex flex-col relative bg-slate-50/50">
+                        
+                        <!-- Header -->
+                        <div class="px-5 pb-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                            <div class="flex items-center gap-3">
+                                <img src="https://i.pravatar.cc/100?img=32" class="w-9 h-9 rounded-full object-cover">
+                                <div>
+                                    <div class="text-[9px] text-slate-400 font-medium uppercase tracking-wider">Expert Call</div>
+                                    <div class="text-xs font-medium text-slate-800">Dr. Sarah Chen</div>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+                                <iconify-icon icon="solar:phone-calling-linear" class="text-red-500 text-sm"></iconify-icon>
+                            </div>
+                        </div>
+
+                        <!-- Data Dashboard inside app -->
+                        <div class="flex-1 p-5 space-y-4 overflow-hidden relative">
+                            <!-- Chart Block -->
+                            <div class="w-full h-32 bg-white rounded-xl border border-slate-100 p-4 relative overflow-hidden shadow-sm">
+                                <div class="text-[10px] font-medium text-slate-400">Trial Progression</div>
+                                <div class="text-sm font-medium text-slate-800 mt-0.5">Phase II Analytics</div>
+                                <!-- Decorative chart -->
+                                <div class="absolute bottom-0 left-0 w-full h-16 flex items-end justify-between px-2 opacity-60">
+                                    <div class="w-1/6 bg-slate-100 h-[30%] rounded-t-sm"></div>
+                                    <div class="w-1/6 bg-slate-200 h-[50%] rounded-t-sm"></div>
+                                    <div class="w-1/6 bg-blue-100 h-[40%] rounded-t-sm"></div>
+                                    <div class="w-1/6 bg-red-100 h-[70%] rounded-t-sm"></div>
+                                    <div class="w-1/6 bg-red-400 h-[90%] rounded-t-sm"></div>
+                                </div>
+                            </div>
+
+                            <!-- Metrics -->
+                            <div class="flex gap-3">
+                                <div class="w-1/2 h-24 bg-red-50/50 rounded-xl border border-red-100 p-3 flex flex-col justify-between shadow-sm">
+                                    <iconify-icon icon="solar:dna-linear" class="text-red-400 text-lg"></iconify-icon>
+                                    <div>
+                                        <div class="text-[9px] text-slate-500 font-medium">Match Rate</div>
+                                        <div class="text-sm font-medium text-slate-800">98.4%</div>
+                                    </div>
+                                </div>
+                                <div class="w-1/2 h-24 bg-white rounded-xl border border-slate-100 p-3 flex flex-col justify-between shadow-sm">
+                                    <iconify-icon icon="solar:document-medicine-linear" class="text-slate-400 text-lg"></iconify-icon>
+                                    <div>
+                                        <div class="text-[9px] text-slate-500 font-medium">Publications</div>
+                                        <div class="text-sm font-medium text-slate-800">1,204</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Assistant Pop-up -->
+                            <div class="absolute bottom-4 left-4 right-4 bg-slate-900 text-white p-4 rounded-xl shadow-xl border border-slate-700/50">
+                                <div class="flex gap-2 items-center mb-2">
+                                    <iconify-icon icon="solar:magic-stick-3-linear" class="text-red-400 text-xs"></iconify-icon>
+                                    <span class="text-[10px] font-medium text-red-400 uppercase tracking-widest">Medvantari AI</span>
+                                </div>
+                                <p class="text-[11px] leading-relaxed text-slate-300 font-light">Dr. Chen's recent work on cellular regeneration aligns directly with your Phase 2 objectives. Recommend initiating a call.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Badges -->
+                <div class="absolute top-[15%] right-[-15%] floating-card p-3 rounded-xl z-20 animate-[float_4s_ease-in-out_infinite] hidden sm:flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                        <iconify-icon icon="solar:users-group-rounded-linear" width="16"></iconify-icon>
+                    </div>
+                    <div>
+                        <div class="text-[9px] font-medium text-slate-400 uppercase tracking-wider">Network Size</div>
+                        <div class="text-xs font-medium text-slate-800">5,000+ Experts</div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-[20%] left-[-20%] floating-card p-3 rounded-xl z-20 animate-[float_5s_ease-in-out_1s_infinite] hidden sm:flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <iconify-icon icon="solar:shield-check-linear" width="16"></iconify-icon>
+                    </div>
+                    <div>
+                        <div class="text-[9px] font-medium text-slate-400 uppercase tracking-wider">Security</div>
+                        <div class="text-xs font-medium text-slate-800">HIPAA Compliant</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-32 px-6 bg-white relative z-20">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div class="max-w-xl">
+                    <h2 class="text-3xl md:text-4xl font-normal tracking-tight text-slate-900">Advanced intelligence <br> for modern research.</h2>
+                    <p class="mt-4 text-slate-500 font-light">Leverage our platform to connect, analyze, and accelerate your medical product development.</p>
+                </div>
+                <a href="#" class="text-sm font-medium text-red-500 hover:text-red-600 flex items-center gap-1 group">
+                    Explore capabilities 
+                    <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="group p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-slate-200 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50">
+                    <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:magic-stick-3-linear" width="20"></iconify-icon>
+                    </div>
+                    <h3 class="text-base font-medium text-slate-900 mb-2">AI Research Assistant</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Instantly summarize clinical trials and uncover hidden data patterns with our fine-tuned medical LLM.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="group p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-slate-200 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50">
+                    <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:video-frame-linear" width="20"></iconify-icon>
+                    </div>
+                    <h3 class="text-base font-medium text-slate-900 mb-2">Expert Matchmaking</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Schedule secure 1-on-1 video consultations with pre-vetted specialists in med-tech and biotech.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="group p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-slate-200 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50">
+                    <div class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="solar:ticket-linear" width="20"></iconify-icon>
+                    </div>
+                    <h3 class="text-base font-medium text-slate-900 mb-2">Networked Events</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Gain exclusive access to closed-door digital symposiums and university partnership programs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Grid Section -->
+    <section class="py-20 px-6 bg-slate-50/50 border-y border-slate-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[240px]">
+                
+                <!-- Large Card -->
+                <div class="lg:col-span-2 row-span-1 bg-white rounded-2xl border border-slate-200 p-8 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-normal text-slate-900 tracking-tight">Global Expert Network</h3>
+                        <p class="mt-2 text-slate-500 text-sm max-w-sm font-light">Connect directly with specialized researchers and industry leaders to validate your health-tech products.</p>
+                    </div>
+                    <div class="absolute right-0 bottom-0 w-64 h-64 bg-gradient-to-tl from-red-50 to-transparent rounded-tl-[100px] pointer-events-none"></div>
+                    
+                    <div class="mt-8 flex gap-3 relative z-10">
+                        <div class="flex -space-x-3">
+                            <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://i.pravatar.cc/100?img=1" alt="">
+                            <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://i.pravatar.cc/100?img=5" alt="">
+                            <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://i.pravatar.cc/100?img=8" alt="">
+                            <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://i.pravatar.cc/100?img=12" alt="">
+                        </div>
+                        <div class="text-xs font-medium text-slate-600 flex items-center bg-slate-100 px-3 rounded-full">+150 Researchers online</div>
+                    </div>
+                </div>
+
+                <!-- Small Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-8 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                    <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-white mb-4 shadow-lg shadow-slate-900/20">
+                        <iconify-icon icon="solar:smartphone-2-linear" width="28"></iconify-icon>
+                    </div>
+                    <h3 class="text-base font-medium text-slate-900">Native iOS App</h3>
+                    <p class="mt-2 text-xs text-slate-500 font-light">Manage your research remotely.</p>
+                </div>
+
+                <!-- Small Card -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col justify-between text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-32 bg-red-500 blur-[80px] opacity-10 pointer-events-none"></div>
+                    <div>
+                        <iconify-icon icon="solar:shield-keyhole-linear" width="24" class="text-slate-400 mb-4"></iconify-icon>
+                        <h3 class="text-base font-medium text-white">Secure Data Vault</h3>
+                    </div>
+                    <p class="text-xs text-slate-400 font-light">End-to-end encrypted storage for IP.</p>
+                </div>
+
+                 <!-- Large Card -->
+                 <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-8 relative overflow-hidden flex items-center">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
+                        <div>
+                            <h3 class="text-xl font-normal text-slate-900 tracking-tight">AI Research Analysis</h3>
+                            <p class="mt-2 text-slate-500 text-sm font-light">Upload trial data and let our models cross-reference against 10M+ peer-reviewed papers in seconds.</p>
+                            <button class="mt-6 text-xs font-medium text-slate-900 border-b border-slate-200 hover:border-slate-900 transition-colors pb-0.5">Explore the algorithms</button>
+                        </div>
+                        <div class="relative h-full hidden md:flex items-center justify-center">
+                            <!-- Simple abstract UI -->
+                            <div class="w-full max-w-[200px] h-32 bg-slate-50 rounded-xl border border-slate-100 p-4 relative overflow-hidden">
+                                <div class="w-3/4 h-2 bg-slate-200 rounded-full mb-3"></div>
+                                <div class="w-1/2 h-2 bg-slate-200 rounded-full mb-3"></div>
+                                <div class="w-5/6 h-2 bg-slate-200 rounded-full mb-6"></div>
+                                <div class="absolute bottom-4 right-4 bg-red-100 text-red-600 text-[9px] font-medium px-2 py-1 rounded">Analysis Complete</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="py-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-normal tracking-tight text-slate-900">Schedule a demo with our CEO</h2>
+                <p class="mt-2 text-slate-500 text-sm font-light">Discover how Medvantari can accelerate your product's time-to-market.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/40 border border-slate-200 overflow-hidden">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Steps -->
+                    <div class="bg-slate-50 p-8 border-b md:border-b-0 md:border-r border-slate-200 md:w-64 flex flex-col gap-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-medium">1</div>
+                            <span class="text-sm font-medium text-slate-900">Your Info</span>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-50">
+                            <div class="w-6 h-6 rounded-full border border-slate-300 text-slate-500 flex items-center justify-center text-[10px] font-medium">2</div>
+                            <span class="text-sm font-medium text-slate-900">Company</span>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-50">
+                            <div class="w-6 h-6 rounded-full border border-slate-300 text-slate-500 flex items-center justify-center text-[10px] font-medium">3</div>
+                            <span class="text-sm font-medium text-slate-900">Confirmation</span>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="p-8 md:p-12 flex-1">
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="custom-input rounded-lg border border-slate-200 p-1 transition-all">
+                                    <label class="block text-[10px] font-medium text-slate-400 uppercase tracking-wider px-3 pt-2">First Name</label>
+                                    <input type="text" class="w-full px-3 pb-2 pt-1 text-sm text-slate-900 outline-none bg-transparent placeholder-slate-300 font-light" placeholder="e.g. Alex">
+                                </div>
+                                <div class="custom-input rounded-lg border border-slate-200 p-1 transition-all">
+                                    <label class="block text-[10px] font-medium text-slate-400 uppercase tracking-wider px-3 pt-2">Last Name</label>
+                                    <input type="text" class="w-full px-3 pb-2 pt-1 text-sm text-slate-900 outline-none bg-transparent placeholder-slate-300 font-light" placeholder="e.g. Morgan">
+                                </div>
+                            </div>
+                            
+                            <div class="custom-input rounded-lg border border-slate-200 p-1 transition-all">
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase tracking-wider px-3 pt-2">Research Focus</label>
+                                <select class="w-full px-3 pb-2 pt-1 text-sm text-slate-900 outline-none bg-transparent appearance-none font-light">
+                                    <option>Medical Devices</option>
+                                    <option>Pharmaceuticals</option>
+                                    <option>Biotech & Genetics</option>
+                                    <option>Digital Health</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-2 cursor-pointer group">
+                                    <!-- Custom Checkbox -->
+                                    <div class="w-4 h-4 rounded border border-slate-300 flex items-center justify-center transition-colors group-hover:border-red-400">
+                                        <div class="w-2 h-2 bg-red-500 rounded-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    </div>
+                                    <span class="text-xs text-slate-500 select-none font-light">I accept the privacy policy</span>
+                                </div>
+
+                                <button type="button" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-6 py-3 rounded-xl transition-colors shadow-lg shadow-slate-900/10">
+                                    Continue to Step 2
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-16 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-12">
+            
+            <div class="max-w-xs">
+                <div class="flex items-center gap-2 mb-6">
+                    <iconify-icon icon="solar:dna-linear" class="text-slate-900 text-lg"></iconify-icon>
+                    <span class="text-sm font-medium tracking-tight text-slate-900">Medvantari</span>
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed mb-6 font-light">
+                    Redefining medical research through advanced AI tools and global expert networks.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-slate-400 hover:text-slate-900 transition-colors"><iconify-icon icon="solar:brand-twitter-linear" width="18"></iconify-icon></a>
+                    <a href="#" class="text-slate-400 hover:text-slate-900 transition-colors"><iconify-icon icon="solar:brand-linkedin-linear" width="18"></iconify-icon></a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
+                <div>
+                    <h4 class="font-medium text-slate-900 text-xs mb-4">Platform</h4>
+                    <ul class="space-y-3 text-xs text-slate-500 font-light">
+                        <li><a href="#" class="hover:text-red-500 transition-colors">AI Analysis</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Expert Network</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">iOS App</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-slate-900 text-xs mb-4">Company</h4>
+                    <ul class="space-y-3 text-xs text-slate-500 font-light">
+                        <li><a href="#" class="hover:text-red-500 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Researchers</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-slate-900 text-xs mb-4">Legal</h4>
+                    <ul class="space-y-3 text-xs text-slate-500 font-light">
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Terms</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">Data Security</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto pt-12 mt-12 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-[10px] text-slate-400 font-light">© 2024 Medvantari Technologies Inc.</p>
+            <div class="flex items-center gap-2 text-[10px] text-slate-400 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                All systems operational
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // DNA Canvas Animation script adapted for Medvantari Hero
+        const canvas = document.getElementById('dna-canvas');
+        const ctx = canvas.getContext('2d');
+        const heroSection = document.getElementById('hero-section');
+        
+        let width, height;
+        let particles = [];
+        
+        // Colors updated to Medvantari's palette (Red and Blue/Slate tones)
+        const colors = [
+            { r: 255, g: 46, b: 76 },   // Accent Red
+            { r: 148, g: 163, b: 184 }  // Slate 400
+        ];
+
+        function resize() {
+            width = heroSection.offsetWidth;
+            height = heroSection.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        class Particle {
+            constructor(isStrandA) {
+                this.isStrandA = isStrandA; 
+                this.y = Math.random() * height;
+                this.x = width / 2;
+                this.size = Math.random() * 40 + 20; // Slightly smaller particles
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.offset = Math.random() * Math.PI * 2;
+                this.color = isStrandA ? colors[0] : colors[1];
+            }
+
+            update(time) {
+                this.y -= this.speed;
+                if (this.y < -100) this.y = height + 100;
+
+                const amplitude = width * 0.35; 
+                const frequency = 0.002; 
+                
+                const wave = Math.sin((this.y * frequency) + (time * 0.0005) + this.offset);
+                const strandPhase = this.isStrandA ? 1 : -1;
+                
+                this.x = (width / 2) + (wave * amplitude * strandPhase);
+                this.pulse = Math.sin(time * 0.002 + this.offset) * 5;
+            }
+
+            draw() {
+                ctx.beginPath();
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, this.size + this.pulse
+                );
+                
+                const c = this.color;
+                gradient.addColorStop(0, `rgba(${c.r}, ${c.g}, ${c.b}, 0.15)`); 
+                gradient.addColorStop(1, `rgba(${c.r}, ${c.g}, ${c.b}, 0)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.arc(this.x, this.y, this.size + this.pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = 40; 
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(i % 2 === 0));
+            }
+        }
+
+        let time = 0;
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            ctx.globalCompositeOperation = 'source-over';
+            particles.forEach(p => {
+                p.update(time);
+                p.draw();
+            });
+
+            time += 16;
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+
+        // Initialize Canvas
+        resize();
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>

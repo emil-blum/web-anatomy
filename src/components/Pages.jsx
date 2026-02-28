@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { An, Sec, Img, PageHeader, SL, Btn, SiteFooter } from "./SharedUI";
 
 // ═══════════════════════════════════════════════════════════
@@ -2073,65 +2073,175 @@ export function GlossaryPage({ T, activePage, setActivePage }) {
 // ═══════════════════════════════════════════════════════════
 // EXAMPLES PAGE
 // ═══════════════════════════════════════════════════════════
+
+const DEVICE_PRESETS = [
+  { id: "desktop", label: "Desktop", width: 1440 },
+  { id: "tablet",  label: "Tablet",  width: 768  },
+  { id: "mobile",  label: "Mobile",  width: 375  },
+];
+const PREVIEW_H = 680;
+
 const EXAMPLES = [
   {
     id: "amazonia",
     name: "Amazonia Guardian",
-    desc: "Forest preservation NGO — shows how editorial typography, a strong hero, and immersive imagery come together for a mission-driven organisation.",
+    desc: "Forest preservation NGO — dark editorial aesthetic, before/after comparison slider, impact stats and embedded map.",
     url: "/examples/amazon.html",
-    tags: ["NGO", "Editorial", "Full-width hero", "Map embed"],
+    tags: ["NGO", "Dark theme", "Editorial", "Map embed"],
+  },
+  {
+    id: "conference",
+    name: "GEITC 2026",
+    desc: "Global EdTech conference — bold geometric typography, animated marquee, multi-location event with registration CTA.",
+    url: "/examples/conference.html",
+    tags: ["Event", "Bold type", "Marquee", "Registration"],
+  },
+  {
+    id: "medtech",
+    name: "Medvantari",
+    desc: "AI medical intelligence SaaS — iOS app mockup, bento grid layout, canvas animation, multi-step booking form.",
+    url: "/examples/medtech.html",
+    tags: ["SaaS", "MedTech", "Bento grid", "App mockup"],
   },
 ];
 
 export function ExamplesPage({ T, activePage, setActivePage }) {
-  const [idx, setIdx] = useState(0);
-  const ex = EXAMPLES[idx];
-  const total = EXAMPLES.length;
+  const [exIdx,  setExIdx]  = useState(0);
+  const [device, setDevice] = useState("desktop");
+  const [scale,  setScale]  = useState(1);
+  const wrapperRef = useRef(null);
+  const iframeRef  = useRef(null);
+
+  const applyScale = useCallback(() => {
+    if (!wrapperRef.current || !iframeRef.current) return;
+    const preset = DEVICE_PRESETS.find(d => d.id === device);
+    const containerWidth = wrapperRef.current.clientWidth;
+    const s = Math.min(1, containerWidth / preset.width);
+    iframeRef.current.style.width  = `${preset.width}px`;
+    iframeRef.current.style.height = `${PREVIEW_H / s}px`;
+    iframeRef.current.style.transform = `scale(${s})`;
+    setScale(s);
+  }, [device]);
+
+  useEffect(() => {
+    applyScale();
+    window.addEventListener("resize", applyScale);
+    return () => window.removeEventListener("resize", applyScale);
+  }, [applyScale]);
+
+  const ex     = EXAMPLES[exIdx];
+  const preset = DEVICE_PRESETS.find(d => d.id === device);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <div>
 
-      {/* Header bar */}
-      <div style={{ padding: "24px 20px", borderBottom: `1px solid ${T.border}`, background: T.bg }}>
-        <div style={{ maxWidth: 1040, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-            <div>
-              <SL T={T}>Example {idx + 1} of {total}</SL>
-              <h1 style={{ fontFamily: "'Instrument Serif', serif", fontSize: "clamp(24px,4vw,36px)", fontWeight: 400, color: T.text, lineHeight: 1.1, marginBottom: 8 }}>{ex.name}</h1>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.6, maxWidth: 560 }}>{ex.desc}</p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
-                {ex.tags.map(tag => (
-                  <span key={tag} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: "3px 8px", borderRadius: 4, background: T.bgAlt, color: T.textMuted, letterSpacing: "0.06em" }}>{tag}</span>
-                ))}
-              </div>
+      {/* ── Compact sticky controls bar ── */}
+      <div style={{ position: "sticky", top: 56, zIndex: 90, background: T.bg + "EA", backdropFilter: "blur(12px)", borderBottom: `1px solid ${T.border}` }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 20px", height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+
+          {/* Example selector */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <button
+              onClick={() => setExIdx(p => (p - 1 + EXAMPLES.length) % EXAMPLES.length)}
+              style={{ width: 28, height: 28, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: "transparent", color: T.text, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "border-color 0.15s" }}
+            >‹</button>
+            <div style={{ minWidth: 0 }}>
+              <span style={{ fontFamily: "'Outfit',sans-serif", fontWeight: 600, fontSize: 14, color: T.text, whiteSpace: "nowrap" }}>{ex.name}</span>
+              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.textMuted, marginLeft: 8 }}>{exIdx + 1}/{EXAMPLES.length}</span>
             </div>
-            {/* Example navigation */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-              <button
-                onClick={() => setIdx(p => (p - 1 + total) % total)}
-                disabled={total === 1}
-                style={{ width: 36, height: 36, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: T.cardBg, color: total === 1 ? T.border : T.text, fontSize: 16, cursor: total === 1 ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              >‹</button>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: T.textMuted, minWidth: 32, textAlign: "center" }}>{idx + 1}/{total}</span>
-              <button
-                onClick={() => setIdx(p => (p + 1) % total)}
-                disabled={total === 1}
-                style={{ width: 36, height: 36, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: T.cardBg, color: total === 1 ? T.border : T.text, fontSize: 16, cursor: total === 1 ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              >›</button>
-            </div>
+            <button
+              onClick={() => setExIdx(p => (p + 1) % EXAMPLES.length)}
+              style={{ width: 28, height: 28, borderRadius: "50%", border: `1.5px solid ${T.border}`, background: "transparent", color: T.text, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "border-color 0.15s" }}
+            >›</button>
           </div>
+
+          {/* Device toggles */}
+          <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+            {DEVICE_PRESETS.map(d => (
+              <button
+                key={d.id}
+                onClick={() => setDevice(d.id)}
+                style={{ padding: "5px 14px", borderRadius: 6, border: `1.5px solid ${device === d.id ? T.accent : T.border}`, background: device === d.id ? T.accent : "transparent", color: device === d.id ? "#fff" : T.textMuted, fontFamily: "'JetBrains Mono',monospace", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap" }}
+              >
+                {d.label} <span style={{ opacity: 0.65 }}>{d.width}px</span>
+              </button>
+            ))}
+          </div>
+
         </div>
       </div>
 
-      {/* iframe */}
-      <div style={{ flex: 1, position: "relative" }}>
-        <iframe
-          key={ex.url}
-          src={ex.url}
-          title={ex.name}
-          style={{ width: "100%", height: "82vh", border: "none", display: "block" }}
-          loading="lazy"
-        />
+      {/* ── Preview area ── */}
+      <div style={{ background: T.bgAlt, padding: "20px 20px 0" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+
+          {/* Browser chrome bar */}
+          <div style={{ background: T.cardBg, borderRadius: "12px 12px 0 0", border: `1px solid ${T.border}`, borderBottom: "none", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+              {["#FF5F57", "#FEBC2E", "#28C840"].map((c, i) => (
+                <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
+              ))}
+            </div>
+            <div style={{ flex: 1, background: T.bgAlt, borderRadius: 6, padding: "5px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: T.textMuted, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+              web-anatomy / examples / {ex.id}
+            </div>
+            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+              {ex.tags.slice(0, 3).map(tag => (
+                <span key={tag} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: T.textMuted, background: T.bgAlt, border: `1px solid ${T.border}`, padding: "2px 8px", borderRadius: 4 }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Scaled iframe wrapper */}
+          <div
+            ref={wrapperRef}
+            style={{ position: "relative", overflow: "hidden", height: PREVIEW_H, background: "#fff", border: `1px solid ${T.border}`, borderTop: "none", borderRadius: "0 0 12px 12px" }}
+          >
+            <iframe
+              ref={iframeRef}
+              key={ex.url}
+              src={ex.url}
+              title={ex.name}
+              style={{ position: "absolute", top: 0, left: 0, transformOrigin: "0 0", border: "none", background: "#fff" }}
+              loading="lazy"
+            />
+          </div>
+
+          {/* Viewport indicator */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "10px 0 20px", fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.textMuted }}>
+            <span>Viewport: {preset.width}px</span>
+            <span style={{ width: 3, height: 3, borderRadius: "50%", background: T.border, display: "inline-block" }} />
+            <span>Rendered at {Math.round(scale * 100)}% scale</span>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Example cards ── */}
+      <div style={{ padding: "40px 20px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: T.accent, marginBottom: 20 }}>All Examples</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+            {EXAMPLES.map((e, i) => (
+              <div
+                key={e.id}
+                onClick={() => setExIdx(i)}
+                style={{ padding: "20px 22px", borderRadius: 12, border: `1.5px solid ${exIdx === i ? T.accent : T.border}`, background: exIdx === i ? T.bgAlt : T.cardBg, cursor: "pointer", transition: "all 0.2s" }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                  <h4 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 15, fontWeight: 600, color: T.text, margin: 0 }}>{e.name}</h4>
+                  {exIdx === i && <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: T.accent, letterSpacing: "0.06em", flexShrink: 0, marginLeft: 8 }}>VIEWING</span>}
+                </div>
+                <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.65, marginBottom: 14 }}>{e.desc}</p>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {e.tags.map(tag => (
+                    <span key={tag} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, color: T.textMuted, background: T.bgAlt, border: `1px solid ${T.border}`, padding: "2px 8px", borderRadius: 4 }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <SiteFooter activePage={activePage} setActivePage={setActivePage} T={T} />
