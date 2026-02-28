@@ -331,6 +331,14 @@ export function HeroSectionsPage({ lm, T, activePage, setActivePage }) {
 // GRID STRUCTURES PAGE
 // ═══════════════════════════════════════════════════════════
 export function GridPage({ lm, T, activePage, setActivePage }) {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
     <div>
       <PageHeader T={T} title="Grid structures" desc="How you lay out information on a grid determines whether visitors absorb it or abandon the page. These are the most effective patterns." />
@@ -415,7 +423,7 @@ export function GridPage({ lm, T, activePage, setActivePage }) {
         <An T={T} label="Masonry Grid" title="Variable-height columns" pos="top-right" vis={lm}>Items fill columns top-to-bottom, packing tightly regardless of height. Great for photo galleries, blog feeds, and pin-board layouts. No wasted space.</An>
         <div style={{ maxWidth: 1040, margin: "0 auto" }}>
           <SL T={T}>Masonry Grid</SL>
-          <div style={{ columns: "3 280px", columnGap: 16 }}>
+          <div style={{ columns: mobile ? "2 160px" : "3 280px", columnGap: 16 }}>
             {[220, 160, 300, 180, 240, 200, 170, 260].map((h, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img key={i} src={`https://picsum.photos/seed/mas${i}/600/${h}`} alt="" style={{ breakInside: "avoid", marginBottom: 16, borderRadius: 10, width: "100%", height: h, objectFit: "cover", display: "block" }} />
@@ -429,9 +437,9 @@ export function GridPage({ lm, T, activePage, setActivePage }) {
         <An T={T} label="Bento Grid" title="Mixed-size content blocks" pos="top-right" vis={lm}>Named after the Japanese bento box. Combines image, text, and stat cells of varying sizes in a structured grid. Popularised by Apple product pages. Great for portfolios, dashboards, and feature showcases.</An>
         <div style={{ maxWidth: 1040, margin: "0 auto" }}>
           <SL T={T}>Bento Box Grid</SL>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gridTemplateRows: "auto", gap: 12 }}>
-            {/* Large feature cell */}
-            <div style={{ gridColumn: "1 / 3", gridRow: "1 / 3", borderRadius: 14, background: "linear-gradient(135deg,hsl(160,28%,42%),hsl(200,25%,32%))", padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", minHeight: 220 }}>
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12 }}>
+            {/* Large feature cell — spans 2×2 on desktop, full-width on mobile */}
+            <div style={{ gridColumn: mobile ? "1 / -1" : "1 / 3", gridRow: mobile ? "auto" : "1 / 3", borderRadius: 14, background: "linear-gradient(135deg,hsl(160,28%,42%),hsl(200,25%,32%))", padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", minHeight: mobile ? 160 : 220 }}>
               <div style={{ fontFamily: "'Instrument Serif',serif", fontSize: 24, fontWeight: 400, color: "#fff", marginBottom: 6 }}>Feature Headline</div>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>The large cell commands attention. Use for your primary message or hero image.</div>
             </div>
@@ -454,8 +462,8 @@ export function GridPage({ lm, T, activePage, setActivePage }) {
             <div style={{ borderRadius: 14, background: T.bgAlt, border: `1px solid ${T.border}`, padding: 20, display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.text, lineHeight: 1.5 }}>Small cells for labels, icons, or quick facts.</div>
             </div>
-            {/* Wide bottom cell */}
-            <div style={{ gridColumn: "1 / 4", borderRadius: 14, background: T.bgAlt, border: `1px solid ${T.border}`, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+            {/* Wide bottom cell — spans 3 cols on desktop, full-width on mobile */}
+            <div style={{ gridColumn: mobile ? "1 / -1" : "1 / 4", borderRadius: 14, background: T.bgAlt, border: `1px solid ${T.border}`, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: T.text, fontWeight: 500 }}>Wide bottom cell — ideal for CTAs, taglines, or navigation</div>
               <button style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: T.accent, color: "#fff", fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Learn more</button>
             </div>
@@ -764,7 +772,14 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
   const [lbOpen, setLbOpen] = useState(false);
   const [lbIdx,  setLbIdx]  = useState(0);
   const [expandIdx, setExpandIdx] = useState(null);
+  const [galMobile, setGalMobile] = useState(false);
   const imgCount = 4;
+  useEffect(() => {
+    const check = () => setGalMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   useEffect(() => {
     document.body.style.overflow = lbOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -852,20 +867,27 @@ export function GalleriesPage({ lm, T, activePage, setActivePage }) {
       <Sec T={T} style={{ padding: "56px 20px", background: T.bgAlt, borderTop: `1px solid ${T.border}` }}>
         <An T={T} label="Hover Expand" title="Focus through expansion" pos="top-left" vis={lm}>Images expand on hover to give context. Others shrink proportionally — creating instant visual hierarchy without navigation.</An>
         <div style={{ maxWidth: 1040, margin: "0 auto" }}>
-          <SL T={T}>Hover Expand Gallery</SL>
-          <div style={{ display: "flex", gap: 12, height: 360 }}>
+          <SL T={T}>{galMobile ? "Tap Expand Gallery" : "Hover Expand Gallery"}</SL>
+          <div style={galMobile
+            ? { display: "flex", flexDirection: "column", gap: 12 }
+            : { display: "flex", gap: 12, height: 360 }
+          }>
             {[20, 130, 220].map((seed, i) => (
               <div
                 key={i}
-                onMouseEnter={() => setExpandIdx(i)}
-                onMouseLeave={() => setExpandIdx(null)}
-                style={{ flex: expandIdx === i ? "0 0 60%" : "1", borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "flex 0.45s cubic-bezier(0.4,0,0.2,1)", position: "relative" }}
+                onMouseEnter={() => !galMobile && setExpandIdx(i)}
+                onMouseLeave={() => !galMobile && setExpandIdx(null)}
+                onClick={() => galMobile && setExpandIdx(expandIdx === i ? null : i)}
+                style={galMobile
+                  ? { height: expandIdx === i ? 280 : 180, borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "height 0.4s cubic-bezier(0.4,0,0.2,1)", position: "relative" }
+                  : { flex: expandIdx === i ? "0 0 60%" : "1", borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "flex 0.45s cubic-bezier(0.4,0,0.2,1)", position: "relative" }
+                }
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`https://picsum.photos/seed/exp${seed}/800/720`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)", display: "flex", alignItems: "flex-end", padding: 16 }}>
-                  <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#fff", fontWeight: 500, opacity: expandIdx === i ? 1 : 0, transition: "opacity 0.3s 0.1s" }}>
-                    Image {i + 1}
+                  <span style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#fff", fontWeight: 500, opacity: galMobile ? 1 : (expandIdx === i ? 1 : 0), transition: "opacity 0.3s 0.1s" }}>
+                    {galMobile ? (expandIdx === i ? "Tap to collapse ↑" : `Image ${i + 1} — tap to expand`) : `Image ${i + 1}`}
                   </span>
                 </div>
               </div>
@@ -984,6 +1006,15 @@ export function MotionPage({ lm, T, activePage, setActivePage }) {
   // Mouse-reactive gradient
   const [gradPos, setGradPos] = useState({ x: 50, y: 50 });
 
+  // Mobile detection
+  const [motionMobile, setMotionMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setMotionMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   // Hover-to-reveal image
   const [hoverReveal, setHoverReveal] = useState(null);
 
@@ -1088,31 +1119,35 @@ export function MotionPage({ lm, T, activePage, setActivePage }) {
       <Sec T={T} style={{ padding: "56px 20px", borderTop: `1px solid ${T.border}` }}>
         <An T={T} label="Hover Reveal" title="Image appears on hover" pos="top-left" vis={lm}>Content-first: the text leads, the image rewards curiosity. Effective for portfolio cards and case studies.</An>
         <div style={{ maxWidth: 1040, margin: "0 auto" }}>
-          <SL T={T}>Hover-to-Reveal Image</SL>
+          <SL T={T}>{motionMobile ? "Tap-to-Reveal Image" : "Hover-to-Reveal Image"}</SL>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
             {[
               { title: "Brand Identity", desc: "Visual language that communicates your values at a glance.", seed: "rev0" },
               { title: "Web Design",     desc: "Structure and aesthetics aligned with your audience's needs.", seed: "rev1" },
               { title: "Strategy",       desc: "Clarity on who you serve and how to reach them.", seed: "rev2" },
-            ].map((card, i) => (
-              <div
-                key={i}
-                onMouseEnter={() => setHoverReveal(i)}
-                onMouseLeave={() => setHoverReveal(null)}
-                style={{ position: "relative", borderRadius: 12, overflow: "hidden", border: `1px solid ${T.border}`, cursor: "pointer", minHeight: 200 }}
-              >
-                <div style={{ padding: "28px 24px", background: T.cardBg, opacity: hoverReveal === i ? 0 : 1, transition: "opacity 0.4s" }}>
-                  <h4 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 8 }}>{card.title}</h4>
-                  <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6 }}>{card.desc}</p>
-                  <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.accent, marginTop: 16 }}>hover to reveal →</p>
+            ].map((card, i) => {
+              const revealed = hoverReveal === i;
+              return (
+                <div
+                  key={i}
+                  onMouseEnter={() => !motionMobile && setHoverReveal(i)}
+                  onMouseLeave={() => !motionMobile && setHoverReveal(null)}
+                  onClick={() => motionMobile && setHoverReveal(hoverReveal === i ? null : i)}
+                  style={{ position: "relative", borderRadius: 12, overflow: "hidden", border: `1px solid ${T.border}`, cursor: "pointer", minHeight: 200 }}
+                >
+                  <div style={{ padding: "28px 24px", background: T.cardBg, opacity: revealed ? 0 : 1, transition: "opacity 0.4s" }}>
+                    <h4 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 8 }}>{card.title}</h4>
+                    <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6 }}>{card.desc}</p>
+                    <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: T.accent, marginTop: 16 }}>{motionMobile ? "tap to reveal →" : "hover to reveal →"}</p>
+                  </div>
+                  <div style={{ position: "absolute", inset: 0, opacity: revealed ? 1 : 0, transition: "opacity 0.4s", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`https://picsum.photos/seed/${card.seed}/600/400`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                    <span style={{ position: "relative", fontFamily: "'Instrument Serif',serif", fontSize: 28, color: "#fff", fontWeight: 400, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>{card.title}</span>
+                  </div>
                 </div>
-                <div style={{ position: "absolute", inset: 0, opacity: hoverReveal === i ? 1 : 0, transition: "opacity 0.4s", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`https://picsum.photos/seed/${card.seed}/600/400`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                  <span style={{ position: "relative", fontFamily: "'Instrument Serif',serif", fontSize: 28, color: "#fff", fontWeight: 400, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>{card.title}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </Sec>
